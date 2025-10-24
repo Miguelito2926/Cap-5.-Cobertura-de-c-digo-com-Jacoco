@@ -47,8 +47,4 @@ public class CategoryServiceTests {
         Assertions.assertEquals(result.get(0).getId(), category.getId());
         Assertions.assertEquals(result.get(0).getName(), category.getName());
     }
-
-
-
-
 }
