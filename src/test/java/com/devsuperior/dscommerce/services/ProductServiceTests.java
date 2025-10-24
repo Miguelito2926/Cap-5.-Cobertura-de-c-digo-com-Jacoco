@@ -43,9 +43,9 @@ public class ProductServiceTests {
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(existId, result.getId());
-        Assertions.assertEquals("PC Gamer Terabyte", result.getName());
-        Assertions.assertEquals("Lorem ipsum dolor sit amet.", result.getDescription());
-        Assertions.assertEquals(4270.0, result.getPrice());
-        Assertions.assertEquals("https://raw.githubusercontent.com/devsuperior/dscatalog-resources/master/backend/img/25-big.jpg", result.getImgUrl());
+        Assertions.assertEquals(product.getName(), result.getName());
+        Assertions.assertEquals(product.getDescription(), result.getDescription());
+        Assertions.assertEquals(product.getPrice(), result.getPrice());
+        Assertions.assertEquals(product.getImgUrl(), result.getImgUrl());
     }
 }
