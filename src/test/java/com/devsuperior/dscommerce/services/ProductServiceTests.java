@@ -1,6 +1,7 @@
 package com.devsuperior.dscommerce.services;
 
 import com.devsuperior.dscommerce.dto.ProductDTO;
+import com.devsuperior.dscommerce.dto.ProductMinDTO;
 import com.devsuperior.dscommerce.entities.Product;
 import com.devsuperior.dscommerce.repositories.ProductRepository;
 import com.devsuperior.dscommerce.services.exceptions.ResourceNotFoundException;
@@ -12,9 +13,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
 import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(SpringExtension.class)
 public class ProductServiceTests {
@@ -29,6 +37,7 @@ public class ProductServiceTests {
     private Long existId;
     private Long nonExistId;
     private String productName;
+    private PageImpl<Product> page;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -38,9 +47,10 @@ public class ProductServiceTests {
         productName = "PS5";
         product = ProductFactory.createProduct();
         product = ProductFactory.createProduct(productName);
+        page = new PageImpl<>(List.of(product));
 
         Mockito.when(productRepository.findById(existId)).thenReturn(Optional.of(product));
-      //  Mockito.when(productRepository.findById(existId)).thenReturn(product);
+        Mockito.when(productRepository.searchByName(any(), any())).thenReturn(page);
         Mockito.when(productRepository.findById(nonExistId)).thenReturn(Optional.empty());
     }
 
@@ -62,9 +72,13 @@ public class ProductServiceTests {
         Assertions.assertThrows(ResourceNotFoundException.class,
                 () -> productService.findById(nonExistId));
     }
-//
-//    @Test
-//    public void findByIdSholdReturnProductNameWhenExistsId() {
-//        Product product = productService.findByProductName(productName);
-//    }
+
+    @Test
+    public void findAllSholdReturnPageProductMinDTO() {
+        Pageable pageable = PageRequest.of(0,12);
+        String name = "PS5";
+        Page <ProductMinDTO> page = productService.findAll(name, pageable);
+
+        Assertions.assertNotNull(page);
+    }
 }
