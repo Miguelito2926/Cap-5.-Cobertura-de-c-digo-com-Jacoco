@@ -116,11 +116,10 @@ public class ProductServiceTests {
 
         Mockito.verify(productRepository).save(any());
     }
-
     @Test
-    public void updateShouldReturnProductDTOWhenExistId() {
+    public void updateShouldReturnProductDTOWhenIdExists() {
 
-        ProductDTO productDTO = productService.update(existingId,dto);
+        ProductDTO productDTO = productService.update(existingId, dto);
 
         Assertions.assertNotNull(productDTO);
         Assertions.assertEquals(1L, productDTO.getId());
@@ -129,26 +128,29 @@ public class ProductServiceTests {
     }
 
     @Test
-    public void updateShoulThrowResourceNotFoundExceptionWhenDoesNotExistId() {
+    public void updateShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
 
-       Assertions.assertThrows(ResourceNotFoundException.class,
-               () -> {
-                   productService.update(nonExistingId,dto);
-               });
+        Assertions.assertThrows(ResourceNotFoundException.class,
+                () -> productService.update(nonExistingId, dto));
     }
 
     @Test
-    public void deleteShouldRemoveProductWhenExistingId() {
+    public void deleteShouldDoNothingWhenIdExists() {
+
         Assertions.assertDoesNotThrow(() -> productService.delete(existingId));
     }
 
     @Test
-    public void deleteShouldThrowResourceNotFoundExceptionRemoveProductWhenNonExistingId() {
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> productService.delete(nonExistingId));
+    public void deleteShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+
+        Assertions.assertThrows(ResourceNotFoundException.class,
+                () -> productService.delete(nonExistingId));
     }
 
     @Test
-    public void deleteShouldThrowDatabaseExceptionRemoveProductWhenNonExistingId() {
-        Assertions.assertThrows(DatabaseException.class, () -> productService.delete(idIntegrationReference));
+    public void deleteShouldThrowDatabaseExceptionWhenIdIsReferenced() {
+
+        Assertions.assertThrows(DatabaseException.class,
+                () -> productService.delete(idIntegrationReference));
     }
 }
