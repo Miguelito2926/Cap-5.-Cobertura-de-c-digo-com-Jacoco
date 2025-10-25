@@ -14,6 +14,12 @@ public class ProductFactory {
         return product;
     }
 
+    public static Product createProduct(String name) {
+        Product product = new Product();
+        product.setName(name);
+        return product;
+    }
+
     public static ProductDTO createProdcutDTO() {
         return new ProductDTO(createProduct());
     }
