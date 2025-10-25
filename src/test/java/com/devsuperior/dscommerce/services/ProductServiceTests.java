@@ -34,6 +34,7 @@ public class ProductServiceTests {
     private ProductRepository productRepository;
 
     private Product product;
+    private ProductDTO dto;
     private Long existId;
     private Long nonExistId;
     private String productName;
@@ -46,12 +47,13 @@ public class ProductServiceTests {
         nonExistId = 2L;
         productName = "PS5";
         product = ProductFactory.createProduct();
-        product = ProductFactory.createProduct(productName);
+        dto = ProductFactory.createProdcutDTO();
         page = new PageImpl<>(List.of(product));
 
         Mockito.when(productRepository.findById(existId)).thenReturn(Optional.of(product));
-        Mockito.when(productRepository.searchByName(any(), any())).thenReturn(page);
+        Mockito.when(productRepository.searchByName(Mockito.anyString(), Mockito.any(Pageable.class))).thenReturn(page);
         Mockito.when(productRepository.findById(nonExistId)).thenReturn(Optional.empty());
+        Mockito.when(productRepository.save(any())).thenReturn(product);
     }
 
     @Test
@@ -68,17 +70,37 @@ public class ProductServiceTests {
     }
 
     @Test
-    public void findByIdSholdReturnResourceNotFoundWhenDoesNotExistId() {
+    public void findByIdShouldThrowResourceNotFoundWhenIdDoesNotExist() {
         Assertions.assertThrows(ResourceNotFoundException.class,
                 () -> productService.findById(nonExistId));
     }
 
     @Test
-    public void findAllSholdReturnPageProductMinDTO() {
-        Pageable pageable = PageRequest.of(0,12);
-        String name = "PS5";
-        Page <ProductMinDTO> page = productService.findAll(name, pageable);
+    public void findAllShouldReturnPageProductMinDTO() {
+        Pageable pageable = PageRequest.of(0, 12);
 
-        Assertions.assertNotNull(page);
+        Page<ProductMinDTO> result = productService.findAll(productName, pageable);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.getSize());
+        Assertions.assertEquals(product.getId(), result.iterator().next().getId());
+        Assertions.assertEquals(product.getName(), result.iterator().next().getName());
+    }
+
+    @Test
+    public void insertShouldReturnProductDTO() {
+
+        ProductDTO productDTO = productService.insert(dto);
+
+        Assertions.assertNotNull(productDTO);
+        Assertions.assertEquals(1L, productDTO.getId());
+        Assertions.assertEquals(dto.getName(), productDTO.getName());
+        Assertions.assertEquals(dto.getDescription(), productDTO.getDescription());
+        Assertions.assertEquals(dto.getPrice(), productDTO.getPrice());
+        Assertions.assertEquals(dto.getImgUrl(), productDTO.getImgUrl());
+        Assertions.assertEquals(dto.getCategories().get(0).getId(), productDTO.getCategories().get(0).getId());
+        Assertions.assertEquals(dto.getCategories().get(0).getName(), productDTO.getCategories().get(0).getName());
+
+        Mockito.verify(productRepository).save(any());
     }
 }

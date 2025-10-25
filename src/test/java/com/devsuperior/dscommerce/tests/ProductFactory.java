@@ -8,15 +8,9 @@ public class ProductFactory {
 
     public static Product createProduct() {
         Category category = CategoryFactory.createCategory();
-        Product product =  new Product(1L, "PC Gamer Terabyte", "Lorem ipsum dolor sit amet.",4270.0,"https://raw.githubusercontent.com/devsuperior/dscatalog-resources/master/backend/img/25-big.jpg");
+        Product product =  new Product(1L, "PS5", "Lorem ipsum dolor sit amet.",4270.0,"https://raw.githubusercontent.com/devsuperior/dscatalog-resources/master/backend/img/25-big.jpg");
         product.getCategories().add(category);
 
-        return product;
-    }
-
-    public static Product createProduct(String name) {
-        Product product = new Product();
-        product.setName(name);
         return product;
     }
 
