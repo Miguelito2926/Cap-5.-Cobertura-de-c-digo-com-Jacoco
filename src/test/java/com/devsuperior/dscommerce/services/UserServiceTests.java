@@ -86,10 +86,22 @@ public class UserServiceTests {
     }
 
     @Test
-    public void getMeShouldReturnUserDTOWhenLogged() {
-        Mockito.when(customUserUtil.getLoggedUsername()).thenReturn(existingUsername);
-        UserDTO userDTO = userService.getMe();
+    public void getMeShouldReturnUserDTOWhenAuthenticated() {
+
+        UserService spyUserService = Mockito.spy(userService);
+        Mockito.doReturn(user).when(spyUserService).authenticated();
+
+        UserDTO userDTO = spyUserService.getMe();
         Assertions.assertNotNull(userDTO);
-        Assertions.assertEquals(existingUsername, userDTO.getName());
+        Assertions.assertEquals(existingUsername, userDTO.getEmail());
+    }
+
+    @Test
+    public void getMeShouldThrowReturnUsernameNotFoundExceptionWhenDoesNotAuthenticated() {
+
+        UserService spyUserService = Mockito.spy(userService);
+        Mockito.doThrow(UsernameNotFoundException.class).when(spyUserService).authenticated();
+
+        Assertions.assertThrows(UsernameNotFoundException.class, spyUserService::getMe);
     }
 }
