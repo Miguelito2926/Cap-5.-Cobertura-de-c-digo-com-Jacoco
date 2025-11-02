@@ -60,10 +60,10 @@ public class OrderService {
     		OrderItem item = new OrderItem(order, product, itemDto.getQuantity(), product.getPrice());
     		order.getItems().add(item);
     	}
+
+        Order orderSave = repository.save(order);
+        orderItemRepository.saveAll(orderSave.getItems());
     	
-    	repository.save(order);
-    	orderItemRepository.saveAll(order.getItems());
-    	
-    	return new OrderDTO(order);
+    	return new OrderDTO(orderSave);
 	}
 }
