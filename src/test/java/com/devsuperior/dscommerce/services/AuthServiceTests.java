@@ -46,7 +46,7 @@ public class AuthServiceTests {
 
         Mockito.when(userService.authenticated()).thenReturn(selfClient);
         Long userId = selfClient.getId();
-        Assertions.assertDoesNotThrow(() ->{
+        Assertions.assertDoesNotThrow(() -> {
             authService.validateSelfOrAdmin(userId);
         });
     }
@@ -57,7 +57,7 @@ public class AuthServiceTests {
         Mockito.when(userService.authenticated()).thenReturn(selfClient);
         Long userId = otherClient.getId();
 
-        Assertions.assertThrows(ForbiddenException.class, () ->{
+        Assertions.assertThrows(ForbiddenException.class, () -> {
             authService.validateSelfOrAdmin(userId);
         });
     }
