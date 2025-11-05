@@ -2,6 +2,7 @@ package com.devsuperior.dscommerce.services;
 
 import com.devsuperior.dscommerce.dto.OrderDTO;
 import com.devsuperior.dscommerce.entities.Order;
+import com.devsuperior.dscommerce.entities.OrderItem;
 import com.devsuperior.dscommerce.entities.Product;
 import com.devsuperior.dscommerce.entities.User;
 import com.devsuperior.dscommerce.repositories.OrderItemRepository;
@@ -77,7 +78,6 @@ public class OrderServiceTests {
         Mockito.when(productRepository.getReferenceById(nonExtingProductId)).thenThrow(EntityNotFoundException.class);
 
         Mockito.when(orderRepository.save(any())).thenReturn(order);
-
         Mockito.when(orderItemRepository.saveAll(any())).thenReturn(new ArrayList<>(order.getItems()));
     }
 
@@ -122,7 +122,9 @@ public class OrderServiceTests {
 
     @Test
     public void insertShouldReturnOrderDTOAdminLogged() {
+
         Mockito.when(userService.authenticated()).thenReturn(admin);
+
         OrderDTO result  = orderService.insert(orderDTO);
         Assertions.assertNotNull(result);
         Assertions.assertEquals(existingOrderId, result.getId());
@@ -130,7 +132,9 @@ public class OrderServiceTests {
 
     @Test
     public void insertShouldReturnOrderDTOClientLogged() {
+
         Mockito.when(userService.authenticated()).thenReturn(client);
+
         OrderDTO result  = orderService.insert(orderDTO);
         Assertions.assertNotNull(result);
         Assertions.assertEquals(existingOrderId, result.getId());
@@ -148,4 +152,20 @@ public class OrderServiceTests {
             OrderDTO result = orderService.insert(orderDTO);
         });
     }
+
+    @Test
+    public void insertShouldTrowsEntityNotFoundExceptionWhenOrderProductIdDoesNotExist() {
+
+        Mockito.when(userService.authenticated()).thenReturn(client);
+
+        product.setId(nonExtingProductId);
+        OrderItem orderItem = new OrderItem(order,product, 2, 10.0);
+        order.getItems().add(orderItem);
+        OrderDTO dto = new OrderDTO(order);
+
+        Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            orderService.insert(dto);
+        });
+    }
+
 }
